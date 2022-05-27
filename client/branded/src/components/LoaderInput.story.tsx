@@ -2,6 +2,7 @@ import { boolean } from '@storybook/addon-knobs'
 import { DecoratorFn, Meta, Story } from '@storybook/react'
 
 import webStyles from '@sourcegraph/web/src/SourcegraphWebApp.scss'
+import { Input } from '@sourcegraph/wildcard'
 
 import { BrandedStory } from './BrandedStory'
 import { LoaderInput } from './LoaderInput'
@@ -22,7 +23,7 @@ export const Interactive: Story = () => (
     <BrandedStory styles={webStyles}>
         {() => (
             <LoaderInput loading={boolean('loading', true)}>
-                <input type="text" placeholder="Loader input" className="form-control" />
+                <Input placeholder="Loader input" />
             </LoaderInput>
         )}
     </BrandedStory>

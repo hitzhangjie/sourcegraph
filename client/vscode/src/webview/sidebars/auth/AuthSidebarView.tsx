@@ -4,10 +4,9 @@ import { VSCodeButton, VSCodeLink } from '@vscode/webview-ui-toolkit/react'
 import classNames from 'classnames'
 
 import { Form } from '@sourcegraph/branded/src/components/Form'
-import { LoaderInput } from '@sourcegraph/branded/src/components/LoaderInput'
 import { currentAuthStateQuery } from '@sourcegraph/shared/src/auth'
 import { CurrentAuthStateResult, CurrentAuthStateVariables } from '@sourcegraph/shared/src/graphql-operations'
-import { Alert, Typography, Link } from '@sourcegraph/wildcard'
+import { Alert, Typography, Link, Input } from '@sourcegraph/wildcard'
 
 import {
     VSCE_LINK_DOTCOM,
@@ -155,6 +154,13 @@ export const AuthSidebarView: React.FunctionComponent<React.PropsWithChildren<Au
         )
     }
 
+    enum InputStates {
+        initial = 'initial',
+        validating = 'loading',
+        success = 'valid',
+        failure = 'error',
+    }
+
     return renderCommon(
         <>
             <p className={classNames(styles.ctaParagraph)}>
@@ -188,41 +194,40 @@ export const AuthSidebarView: React.FunctionComponent<React.PropsWithChildren<Au
                 </p>
             )}
             <p className={classNames(styles.ctaButtonWrapperWithContextBelow)}>
-                <LoaderInput loading={state === 'validating'}>
-                    <Typography.Label htmlFor="access-token-input">Access Token</Typography.Label>
-                    <input
-                        className={classNames('input form-control', styles.ctaInput)}
-                        id="access-token-input"
-                        value={accessToken}
-                        type="text"
-                        onChange={onTokenInputChange}
-                        name="token"
+                <Input
+                    inputClassName={classNames('input', styles.ctaInput)}
+                    id="access-token-input"
+                    value={accessToken}
+                    onChange={onTokenInputChange}
+                    name="token"
+                    required={true}
+                    autoFocus={true}
+                    spellCheck={false}
+                    disabled={state === 'validating'}
+                    placeholder="ex 6dfc880b320dff712d9f6cfcac5cbd13ebfad1d8"
+                    label="Access Token"
+                    className="mb-0"
+                    status={InputStates[state]}
+                />
+            </p>
+            {usePrivateInstance && (
+                <p className={classNames(styles.ctaButtonWrapperWithContextBelow)}>
+                    <Input
+                        inputClassName={classNames('input', styles.ctaInput)}
+                        id="instance-url-input"
+                        value={endpointUrl}
+                        type="url"
+                        name="instance-url"
+                        onChange={onInstanceURLInputChange}
                         required={true}
                         autoFocus={true}
                         spellCheck={false}
                         disabled={state === 'validating'}
-                        placeholder="ex 6dfc880b320dff712d9f6cfcac5cbd13ebfad1d8"
+                        placeholder="ex https://sourcegraph.example.com"
+                        label="Sourcegraph Instance URL"
+                        className="mb-0"
+                        status={InputStates[state]}
                     />
-                </LoaderInput>
-            </p>
-            {usePrivateInstance && (
-                <p className={classNames(styles.ctaButtonWrapperWithContextBelow)}>
-                    <LoaderInput loading={state === 'validating'}>
-                        <Typography.Label htmlFor="instance-url-input">Sourcegraph Instance URL</Typography.Label>
-                        <input
-                            className={classNames('input form-control', styles.ctaInput)}
-                            id="instance-url-input"
-                            value={endpointUrl}
-                            type="url"
-                            name="instance-url"
-                            onChange={onInstanceURLInputChange}
-                            required={true}
-                            autoFocus={true}
-                            spellCheck={false}
-                            disabled={state === 'validating'}
-                            placeholder="ex https://sourcegraph.example.com"
-                        />
-                    </LoaderInput>
                 </p>
             )}
             <VSCodeButton
